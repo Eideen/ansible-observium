@@ -2,8 +2,13 @@
 - name: include os-specific variables
   include_vars: "{{ ansible_os_family }}.yml"
 
-- include_tasks: setup-redhat.yml
+- name: Include prerequisites for Redhat
+  include_tasks: setup-redhat.yml
   when: ansible_os_family == "RedHat"
+
+- name: Include prerequisites for Debain/Ubuntu
+  include_tasks: setup-debian.yml
+  when: ansible_os_family == "Debian"
 
 - name: check if observium path exists
   stat: path={{ observium_path }}

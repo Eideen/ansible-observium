@@ -1,0 +1,7 @@
+---
+
+## source: https://docs.observium.org/install_debian/
+observium_packages: ['rrdcached','libapache2-mod-php7.0', 'php7.0-cli', 'php7.0-mysql', 'php7.0-mysqli', 'php7.0-gd', 'php7.0-mcrypt', 'php7.0-json', 'php-pear', 'snmp', 'fping', 'mariadb-server', 'mariadb-client', 'python-mysqldb', 'rrdtool', 'subversion', 'whois', 'mtr-tiny', 'ipmitool', 'graphviz', 'imagemagick', 'apache2']
+observium_directories:
+  - { path: "{{ observium_path }}/logs", owner: www-data, group: www-data, mode: "0755" }
+  - { path: "{{ observium_path }}/rrd",  owner: www-data, group: www-data, mode: "0755" }
