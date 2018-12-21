@@ -29,10 +29,13 @@ observium_ldap_groupmemberattr: "memberUid"
 observium_ldap_emailattr: "mail"
 observium_auth_ldap_groups: []
 #
-observium_rrdcached_socket: unix:/var/run/rrdcached.sock
+observium_rrdcached_demon: /usr/bin/rrdcached
+observium_rrdcached_socket: /var/run/rrdcached.sock
 observium_rrdcached_journal: /var/lib/rrdcached/journal/
 observium_rrdcached_pidfile: /var/run/rrdcached.pid
 observium_rrdcached_wtimeout: 1800
+observium_rrdcached_Wjitter: 1800
+observium_rrdcached_Wjthreads: 4
 observium_rrdcached_delay: 1800
 observium_rrdcached_ftimeout: 3600
 apache_group: apache
@@ -67,8 +70,8 @@ observium_smokeping_dir: /var/lib/smokeping
 observium_geocoding_dns: yes
 #
 observium_directories:
-  - { path: "{{ observium_path }}/logs", owner: apache, group: apache, mode: "0755" }
-  - { path: "{{ observium_path }}/rrd",  owner: apache, group: apache, mode: "0755" }
+  - { path: "{{ observium_path }}/logs", owner: {{ apache_group }}, group: {{ apache_group }}, mode: "0755" }
+  - { path: "{{ observium_path }}/rrd",  owner: {{ apache_group }}, group: {{ apache_group }}e, mode: "0755" }
 observium_cron_jobs:
   - "33  */6 * * *  root  /opt/observium/discovery.php -h all > /dev/null 2>&1"
   - "7   *   * * *  root  /opt/observium/discovery.php -h new > /dev/null 2>&1"
