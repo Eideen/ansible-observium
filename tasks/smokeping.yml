@@ -40,6 +40,8 @@
   notify:
    - restart smokeping
 
+
+##datadir  = /opt/observium/rrd/smokeping
 - name: Controlling pathname  for target2
   lineinfile:
    path: /etc/smokeping/config.d/pathnames
@@ -76,13 +78,8 @@
     group=root
     mode=0644
 
-
-
-##datadir  = /opt/observium/rrd/smokeping
-
-
-- name: enable and start rrdcached
+- name: enable and start smokeping
   service:
-    name=rrdcached
+    name=smokeping
     enabled=yes
     state=started
