@@ -29,6 +29,7 @@
   notify:
    - restart smokeping
 
+
 - name: templater smokeping Presentation file
   template: >-
     src=smokeping.Presentation.j2
@@ -48,6 +49,25 @@
   notify:
    - restart smokeping
 
+- name: template smokeping Presentation
+  template: >-
+    src=smokeping.Presentation.j2
+    dest=/etc/smokeping/config.d/Presentation
+    owner=root
+    group=root
+    mode=0644
+  notify:
+   - restart smokeping
+
+
+- name: Controlling generate-smokeping for Fping random between 1-4
+  lineinfile:
+   path: /opt/observium/scripts/generate-smokeping.php
+   regexp: '^echo("probe = FPing"'
+   line: 'echo("probe = FPing" . rand(1,4) . PHP_EOL);'
+   backup: yes
+
+
 - name: template observium-smokeping crontab
   template: >-
     src=smokeping.cron.j2
@@ -56,17 +76,6 @@
     group=root
     mode=0644
 
-
-
-- name: template smokeping Presentation
-  template: >-
-    src=smokeping.cron.j2
-    dest=/etc/cron.d/observium-smpkeping
-    owner=root
-    group=root
-    mode=0644
-  notify:
-   - restart smokeping
 
 
 ##datadir  = /opt/observium/rrd/smokeping
