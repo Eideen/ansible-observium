@@ -1,4 +1,7 @@
 ---
+
+##url for access= http://localhost/cgi-bin/smokeping.cgi
+
 - name: Include prerequisites for Redhat
   yum: name=smokeping state=installed
   when: ansible_os_family == "RedHat"
@@ -16,28 +19,61 @@
   notify:
    - restart smokeping
 
-   
-
-- name: template rrdcached service unit
+- name: templater smokeping probes file
   template: >-
-    src=rrdcached.service.j2
-    dest=/etc/systemd/system/rrdcached.service
+    src=smokeping.probes.j2
+    dest=/etc/smokeping/config.d/probes
     owner=root
     group=root
     mode=0644
-  when: ansible_os_family == "RedHat"
+  notify:
+   - restart smokeping
 
-- name: template rrdcached service unit
+- name: templater smokeping Presentation file
   template: >-
-    src=rrdcached.debain.j2
-    dest=/etc/default/rrdcached
+    src=smokeping.Presentation.j2
+    dest=/etc/smokeping/config.d/Presentation
     owner=root
     group=root
     mode=0644
-  when: ansible_os_family == "Debian"
+  notify:
+   - restart smokeping
+
+- name: Controlling pathname  for target2
+  lineinfile:
+   path: /etc/smokeping/config.d/pathnames
+   regexp: '^datadir'
+   line: 'datadir  = /opt/observium/rrd/smokeping'
+   backup: yes
+  notify:
+   - restart smokeping
+
+- name: template observium-smokeping crontab
+  template: >-
+    src=smokeping.cron.j2
+    dest=/etc/cron.d/observium-smpkeping
+    owner=root
+    group=root
+    mode=0644
+
+
+
+- name: template smokeping Presentation
+  template: >-
+    src=smokeping.cron.j2
+    dest=/etc/cron.d/observium-smpkeping
+    owner=root
+    group=root
+    mode=0644
+  notify:
+   - restart smokeping
+
+
+##datadir  = /opt/observium/rrd/smokeping
+
 
 - name: enable and start rrdcached
   service:
     name=rrdcached
     enabled=yes
-    state=restated
+    state=started

@@ -1,2 +1,11 @@
 ---
 # handlers file for observium
+- name: restart rrdcached
+  service:
+   name: rrdcached
+   state: restarted
+
+- name: restart smokeping
+  service:
+   name: smokeping
+   state: restarted

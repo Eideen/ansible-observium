@@ -76,3 +76,6 @@ observium_cron_jobs:
   - "33  */6 * * *  root  /opt/observium/discovery.php -h all > /dev/null 2>&1"
   - "7   *   * * *  root  /opt/observium/discovery.php -h new > /dev/null 2>&1"
   - "*/5 *   * * *  root  /opt/observium/poller-wrapper.py {{ observium_poller_threads }} > /dev/null 2>&1"
+
+observium_cron_jobs_smokeping:
+  - "1  */6 * * *  root  /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
