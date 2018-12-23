@@ -43,10 +43,11 @@
 
 - name: extract community edition
   when: not observium_use_subscription and not observium_community_stat.stat.exists
-  command: >-
-    creates=/opt/observium/config.php.default
-    chdir=/opt
-    tar xzf {{ observium_get_url.dest }}
+  unarchive:
+    src: {{ observium_get_url.dest }}
+    dest: /opt
+    creates: /opt/observium/config.php.default
+
 
 - name: include selinux tasks
   include_tasks: selinux.yml

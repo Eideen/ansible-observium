@@ -20,5 +20,5 @@
 - name: enable and start rrdcached
   service:
     name=rrdcached
-    enabled=yes 
+    enabled=yes
     state=restated
