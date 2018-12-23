@@ -44,7 +44,7 @@
 - name: extract community edition
   when: not observium_use_subscription and not observium_community_stat.stat.exists
   unarchive:
-    src: {{ observium_get_url.dest }}
+    src: "{{ observium_get_url.dest }}"
     dest: /opt
     creates: /opt/observium/config.php.default
 

@@ -1,7 +1,17 @@
 ---
 - name: install epel repository
-  yum: name=epel-release state=installed
+  yum:
+   name: epel-release
+   state: installed
+   register: apt_yum
+  retries: 5
+  until: apt_yum | success
 
 - name: install prerequisites
-  yum: name={{ item }} state=installed
+  yum:
+   name: "{{ item }}"
+   state: installed
+   register: apt_yum
   with_items: "{{ observium_packages }}"
+  retries: 5
+  until: apt_yum | success
