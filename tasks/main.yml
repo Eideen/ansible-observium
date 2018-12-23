@@ -34,19 +34,13 @@
   stat: path=/opt/observium-community-latest.tar.gz
   register: observium_community_stat
 
-- name: download community edition
-  when: not observium_use_subscription and not observium_community_stat.stat.exists
-  get_url: >-
-    url={{ observium_community_url }}
-    dest=/opt
-  register: observium_get_url
-
 - name: extract community edition
   when: not observium_use_subscription and not observium_community_stat.stat.exists
   unarchive:
-    src: "{{ observium_get_url.dest }}"
-    dest: /opt
-    creates: /opt/observium/config.php.default
+   src: "{{ observium_community_url }}"
+   dest: /opt
+   creates: /opt/observium/config.php.default
+   register: observium_get_url
 
 
 - name: include selinux tasks
