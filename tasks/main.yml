@@ -17,6 +17,8 @@
     groups: {{ apache_group }}
     append: yes
     home: {{ observium_path }}
+    create_home: no
+    comment: user for running observium
 
 
 - name: check if observium path exists
