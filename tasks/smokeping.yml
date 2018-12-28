@@ -10,7 +10,7 @@
   apt: name=smokeping state=installed
   when: ansible_os_family == "Debian"
 
-- name: Controlling config  for target2
+- name: Controlling config for target2
   lineinfile:
    path: /etc/smokeping/config
    regexp: '^@include /etc/smokeping/config.d/Targets2'
@@ -48,7 +48,7 @@
   lineinfile:
    path: /etc/smokeping/config.d/pathnames
    regexp: '^datadir'
-   line: 'datadir  = /opt/observium/rrd/smokeping'
+   line: 'datadir  = {{ smokeping_datadir }}'
    backup: yes
   notify:
    - restart smokeping

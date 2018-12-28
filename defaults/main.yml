@@ -84,6 +84,11 @@ observium_cron_jobs_smokeping:
   - "1  */6 * * *  root  /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
 
 ### smokeping related ###
+#plasse to store RRD file, when using RRDCached it can only be one parant folder.
+smokeping_datadir: /opt/observium/rrd/smokeping
+
+#
+
 
 #https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html#___top
 
@@ -96,6 +101,11 @@ smokeping_owner_email: {{ USER }}@example.com
 smokeping_syslogfacility: local1
 #The syslog priority to use, eg. debug, notice or info. Default is info.
 smokeping_syslogpriority: info
+
+
+smokeping_ping_interval: 0.01 #time between any host, in seconds
+
+smokeping_ping_hostinterval: 1 #time between same host, in seconds
 
 #Email to Alert Group
 smokeping_email_to: smokepingAlert@example.com
