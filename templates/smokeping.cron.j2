@@ -1,5 +1,5 @@
-# ansible managed
-# observium crontab
+# {{ ansible_managed }}
+# observium->smokeping crontab
 {% for cron in observium_cron_jobs_smokeping %}
 {{ cron }}
 {% endfor %}

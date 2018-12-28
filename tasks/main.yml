@@ -40,8 +40,6 @@
    src: "{{ observium_community_url }}"
    dest: /opt
    creates: /opt/observium/config.php.default
-   register: observium_get_url
-
 
 - name: include selinux tasks
   include_tasks: selinux.yml

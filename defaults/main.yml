@@ -1,4 +1,7 @@
 ---
+ansible_managed: This file is managed by Ansible, all changes will be lost.
+#
+
 rpmforge_release: 0.5.3-1.el7
 observium_use_subscription: no
 observium_svn_branch: stable
@@ -79,3 +82,21 @@ observium_cron_jobs:
 
 observium_cron_jobs_smokeping:
   - "1  */6 * * *  root  /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
+
+### smokeping related ###
+
+#https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html#___top
+
+#owner (mandatory setting) Name of the person responsible for this smokeping installation.
+smokeping_owner: {{ USER }}
+#contact (mandatory setting) Mail address of the person responsible for this smokeping installation.
+smokeping_owner_email: {{ USER }}@example.com
+
+#syslogfacility The syslog facility to use, eg. local0...local7. Note: syslog logging is only used if you specify this.
+smokeping_syslogfacility: local1
+#The syslog priority to use, eg. debug, notice or info. Default is info.
+smokeping_syslogpriority: info
+
+#Email to Alert Group
+smokeping_email_to: smokepingAlert@example.com
+smokeping_email_from: smokeping@example.com

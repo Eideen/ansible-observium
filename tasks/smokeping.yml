@@ -20,28 +20,30 @@
    - restart smokeping
 
 - name: templater smokeping probes file
-  template: >-
-    src=smokeping.probes.j2
-    dest=/etc/smokeping/config.d/probes
-    owner=root
-    group=root
-    mode=0644
+  template:
+    src: smokeping.probes.j2
+    dest: /etc/smokeping/config.d/probes
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
   notify:
    - restart smokeping
 
 
 - name: templater smokeping Presentation file
-  template: >-
-    src=smokeping.Presentation.j2
-    dest=/etc/smokeping/config.d/Presentation
-    owner=root
-    group=root
-    mode=0644
+  template:
+    src: smokeping.Presentation.j2
+    dest: /etc/smokeping/config.d/Presentation
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
   notify:
    - restart smokeping
 
 
-##datadir  = /opt/observium/rrd/smokeping
+##datadir  :  /opt/observium/rrd/smokeping
 - name: Controlling pathname  for target2
   lineinfile:
    path: /etc/smokeping/config.d/pathnames
@@ -52,12 +54,13 @@
    - restart smokeping
 
 - name: template smokeping Presentation
-  template: >-
-    src=smokeping.Presentation.j2
-    dest=/etc/smokeping/config.d/Presentation
-    owner=root
-    group=root
-    mode=0644
+  template:
+    src: smokeping.Presentation.j2
+    dest: /etc/smokeping/config.d/Presentation
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
   notify:
    - restart smokeping
 
@@ -71,15 +74,16 @@
 
 
 - name: template observium-smokeping crontab
-  template: >-
-    src=smokeping.cron.j2
-    dest=/etc/cron.d/observium-smpkeping
-    owner=root
-    group=root
-    mode=0644
+  template:
+    src: smokeping.cron.j2
+    dest: /etc/cron.d/observium-smpkeping
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
 
 - name: enable and start smokeping
   service:
-    name=smokeping
-    enabled=yes
-    state=started
+    name: smokeping
+    enabled: yes
+    state: started
