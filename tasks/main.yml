@@ -3,32 +3,42 @@
   include_vars: "{{ ansible_os_family }}.yml"
 
 - name: Include prerequisites for Redhat
-  include_tasks: setup-redhat.yml
-  when: ansible_os_family == "RedHat"
+  include_tasks: "setup-{{ ansible_os_family }}.yml"
+#   when: ansible_os_family == "RedHat"
+#
+# - name: Include prerequisites for Debain/Ubuntu
+#   include_tasks: setup-debian.yml
+#   when: ansible_os_family == "Debian"
 
-- name: Include prerequisites for Debain/Ubuntu
-  include_tasks: setup-debian.yml
-  when: ansible_os_family == "Debian"
+- name: Make observium user
+  user:
+    name: {{ observium_user }}
+    shell: /usr/sbin/nologin
+    groups: {{ apache_group }}
+    append: yes
+    home: {{ observium_path }}
+
 
 - name: check if observium path exists
-  stat: path={{ observium_path }}
+  stat:
+    path: {{ observium_path }}
   register: observium_stat
 
 - name: create observium path
-  file: >-
-    path={{ observium_path }}
-    state=directory
-    mode=0755
-    owner=root
-    group=root
+  file:
+    path: {{ observium_path }}
+    state: directory
+    mode: 0755
+    owner: {{ observium_user }}
+    group: {{ apache_group }}
 
 - name: Checkout subscription observium
   when: observium_use_subscription
-  subversion: >-
-    dest=/opt/observium
-    repo={{ observium_svn_url }}/{{ observium_svn_branch }}
-    username={{ observium_svn_username }}
-    password={{ observium_svn_password }}
+  subversion:
+    dest: /opt/observium
+    repo: {{ observium_svn_url }}/{{ observium_svn_branch }}
+    username: {{ observium_svn_username }}
+    password: {{ observium_svn_password }}
 
 - name: check if observium community edition is downloaded
   stat: path=/opt/observium-community-latest.tar.gz
@@ -46,32 +56,35 @@
   when: ansible_selinux.status == 'enabled'
 
 - name: create observium directories
-  file: >-
-    path={{ item.path }}
-    state=directory
-    owner={{ item.owner }}
-    group={{ item.group }}
-    mode={{ item.mode }}
+  file:
+    path: {{ item.path }}
+    state: directory
+    owner: {{ observium_user }}
+    group: {{ apache_group }}
+    mode: {{ item.mode }}
   with_items: "{{ observium_directories }}"
 
 - name: template observium configuration
-  template: >-
-    src=config.php.j2
-    dest={{ observium_path }}/config.php
-    owner={{ observium_user }}
-    group={{ observium_user }}
-    backup=yes
+  template:
+    src: config.php.j2
+    dest: {{ observium_path }}/config.php
+    owner: root
+    group: root
+    backup: yes
 
 - include_tasks: rrdcached.yml
 
 - include_tasks: mariadb.yml
 
 - name: template observium crontab
-  template: >-
-    src=observium.cron.j2
-    dest=/etc/cron.d/observium
-    owner=root
-    group=root
-    mode=0644
+  template:
+    src: observium.cron.j2
+    dest: /etc/cron.d/observium
+    owner: root
+    group: root
+    mode: 0644
+
+- include_tasks: smokeping.yml
 
 - include_tasks: devices.yml
+  when: observium_devices is defined

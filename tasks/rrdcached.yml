@@ -1,5 +1,5 @@
 ---
-- name: template rrdcached service unit
+- name: template rrdcached service unit, RedHat
   template: >-
     src=rrdcached.service.j2
     dest=/etc/systemd/system/rrdcached.service
@@ -8,17 +8,20 @@
     mode=0644
   when: ansible_os_family == "RedHat"
 
-- name: template rrdcached service unit
+- name: template rrdcached service unit, Debian
   template: >-
-    src=rrdcached.debain.j2
+    src=rrdcached.debian.j2
     dest=/etc/default/rrdcached
     owner=root
     group=root
     mode=0644
   when: ansible_os_family == "Debian"
+  notify:
+   - restart rrdcached
+
 
 - name: enable and start rrdcached
   service:
     name=rrdcached
     enabled=yes
-    state=restated
+    state=started

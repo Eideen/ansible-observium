@@ -1,7 +1,14 @@
 ---
 ansible_managed: This file is managed by Ansible, all changes will be lost.
 #
+#pathnames/filesnames
+observium_backup_dest: ~/observium.backup.tar.xz
+observium_path: /opt/observium
+observium_collectd_dir: /var/lib/collectd/rrd
+observium_fping: /usr/sbin/fping
+observium_email_sendmail_path: /usr/sbin/sendmail
 
+#General
 rpmforge_release: 0.5.3-1.el7
 observium_use_subscription: no
 observium_svn_branch: stable
@@ -9,7 +16,6 @@ observium_svn_url: http://svn.observium.org/svn/observium/branches
 observium_svn_username: ""
 observium_svn_password: ""
 observium_community_url: http://www.observium.org/observium-community-latest.tar.gz
-observium_path: /opt/observium
 observium_user: root
 #
 observium_web_mouseover: "TRUE"
@@ -32,21 +38,13 @@ observium_ldap_groupmemberattr: "memberUid"
 observium_ldap_emailattr: "mail"
 observium_auth_ldap_groups: []
 #
-observium_rrdcached_demon: /usr/bin/rrdcached
-observium_rrdcached_socket: /var/run/rrdcached.sock
-observium_rrdcached_journal: /var/lib/rrdcached/journal/
-observium_rrdcached_pidfile: /var/run/rrdcached.pid
-observium_rrdcached_wtimeout: 1800
-observium_rrdcached_Wjitter: 1800
-observium_rrdcached_Wjthreads: 4
-observium_rrdcached_delay: 1800
-observium_rrdcached_ftimeout: 3600
+
 apache_group: apache
 #
 observium_email_default: foo
 observium_email_from: "nobody@{{ ansible_domain }}"
 observium_email_backend: sendmail
-observium_email_sendmail_path: /usr/sbin/sendmail
+
 #
 observium_poller_threads: 2
 #
@@ -61,41 +59,57 @@ observium_alerts_bgp_whitelist: []
 #
 observium_ping_timeout: 500
 observium_ping_retries: 3
-observium_fping: /usr/sbin/fping
+
 #
 observium_rancid_configs: []
 observium_rancid_version: 2
 #
-observium_collectd_dir: /var/lib/collectd/rrd
-#
-observium_smokeping_dir: /var/lib/smokeping
+
+
 #
 observium_geocoding_dns: yes
 #
 observium_directories:
-  - { path: "{{ observium_path }}/logs", owner: {{ apache_group }}, group: {{ apache_group }}, mode: "0755" }
-  - { path: "{{ observium_path }}/rrd",  owner: {{ apache_group }}, group: {{ apache_group }}e, mode: "0755" }
+  - { path: "{{ observium_path }}/logs", mode: "0775" }
+  - { path: "{{ observium_path }}/rrd", mode: "0775" }
 observium_cron_jobs:
-  - "33  */6 * * *  root  /opt/observium/discovery.php -h all > /dev/null 2>&1"
-  - "7   *   * * *  root  /opt/observium/discovery.php -h new > /dev/null 2>&1"
-  - "*/5 *   * * *  root  /opt/observium/poller-wrapper.py {{ observium_poller_threads }} > /dev/null 2>&1"
+  - "33  */6 * * *  {{ observium_user }}  {{ observium_path }}/discovery.php -h all > /dev/null 2>&1"
+  - "7   *   * * *  {{ observium_user }}  {{ observium_path }}/discovery.php -h new > /dev/null 2>&1"
+  - "*/5 *   * * *  {{ observium_user }}  {{ observium_path }}/poller-wrapper.py > /dev/null 2>&1"
+  - "13  5   * * *  {{ observium_user }}  {{ observium_path }}/housekeeping.php -ysel >> /dev/null 2>&1"
+  - "47  4   * * *  {{ observium_user }}  {{ observium_path }}/housekeeping.php -yrptb >> /dev/null 2>&1"
+  - "13  */3 * * *  {{ observium_user }}  cd {{ observium_path }}; tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1"
+
 
 observium_cron_jobs_smokeping:
-  - "1  */6 * * *  root  /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
+  - "1  */6 * * *  root  {{ observium_path }}/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
+
+
+### rrdcached ###
+observium_rrdcached_demon: /usr/bin/rrdcached
+observium_rrdcached_socket: /var/run/rrdcached.sock
+observium_rrdcached_journal: /var/lib/rrdcached/journal/
+observium_rrdcached_pidfile: /var/run/rrdcached.pid
+observium_rrdcached_wtimeout: 1800
+observium_rrdcached_Wjitter: 1800
+observium_rrdcached_Wjthreads: 4
+observium_rrdcached_delay: 1800
+observium_rrdcached_ftimeout: 3600
+
+
 
 ### smokeping related ###
 #plasse to store RRD file, when using RRDCached it can only be one parant folder.
 smokeping_datadir: /opt/observium/rrd/smokeping
-
 #
 
 
 #https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html#___top
 
 #owner (mandatory setting) Name of the person responsible for this smokeping installation.
-smokeping_owner: {{ USER }}
+smokeping_owner: test
 #contact (mandatory setting) Mail address of the person responsible for this smokeping installation.
-smokeping_owner_email: {{ USER }}@example.com
+smokeping_owner_email: test@example.com
 
 #syslogfacility The syslog facility to use, eg. local0...local7. Note: syslog logging is only used if you specify this.
 smokeping_syslogfacility: local1
@@ -108,5 +122,5 @@ smokeping_ping_interval: 0.01 #time between any host, in seconds
 smokeping_ping_hostinterval: 1 #time between same host, in seconds
 
 #Email to Alert Group
-smokeping_email_to: smokepingAlert@example.com
-smokeping_email_from: smokeping@example.com
+smokeping_email_to: "smokepingAlert@{{ ansible_domain }}"
+smokeping_email_from: "smokeping@{{ ansible_domain }}"

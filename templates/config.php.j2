@@ -56,9 +56,9 @@ $config['rancid_configs'][] = "{{ path }}";
 $config['collectd_dir']     = "{{ observium_collectd_dir }}";
 {% endif %}
 
-{% if observium_smokeping_dir %}
+{% if smokeping_datadir %}
 # SMOKEPING
-$config['smokeping']['dir']   = "{{ observium_smokeping_dir }}";
+$config['smokeping']['dir']   = "{{ smokeping_datadir }}";
 {% endif %}
 
 {% if observium_alerts_bgp_whitelist %}

@@ -3,11 +3,11 @@
 ##url for access= http://localhost/cgi-bin/smokeping.cgi
 
 - name: Include prerequisites for Redhat
-  yum: name=smokeping state=installed
+  yum: name=smokeping state=present
   when: ansible_os_family == "RedHat"
 
 - name: Include prerequisites for Debain/Ubuntu
-  apt: name=smokeping state=installed
+  apt: name=smokeping state=present
   when: ansible_os_family == "Debian"
 
 - name: Controlling config for target2
@@ -68,10 +68,12 @@
 - name: Controlling generate-smokeping for Fping random between 1-4
   lineinfile:
    path: /opt/observium/scripts/generate-smokeping.php
-   regexp: '^echo("probe = FPing"'
-   line: 'echo("probe = FPing" . rand(1,4) . PHP_EOL);'
+   regexp: 'echo\(\"probe = FPing\"'
+   insertbefore: 'echo\(\"host = \"'
+   line: '  echo("probe = FPing" . rand(1,4) . PHP_EOL);'
    backup: yes
 
+#^echo("host = " . $device['hostname']
 
 - name: template observium-smokeping crontab
   template:
