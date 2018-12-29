@@ -9,7 +9,8 @@ contact  = {{ smokeping_owner_email }}
 # NOTE: do not put the Image Cache below cgi-bin
 # since all files under cgi-bin will be executed ... this is not
 # good for images.
-cgiurl   = http://{host}/smokeping.cgi
+# http://{{ ansible_hostname }}/cgi-bin/smokeping.cgi
+cgiurl   = http://{{ ansible_hostname }}/smokeping.cgi
 
 # specify this to get syslog logging
 syslogfacility =  {{ smokeping_syslogfacility }}

@@ -7,7 +7,7 @@
     name: smokeping
     state: present
 
-- name: "smokeping: templates config files"
+- name: "smokeping: templates config files, and generate-Targets2-script"
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -24,7 +24,7 @@
     minute: "1"
     hour: "*/6"
     user: root
-    job: "{{ observium_path }}/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
+    job: "{{ observium_path }}/scripts/generate-smokeping.php > {{smokeping_config_dir}}/Targets2 && service smokeping restart"
     cron_file: ansible_observium-smokeping
 
 - name: "smokeping: Controlling pathname  for target2"
@@ -37,7 +37,16 @@
   notify:
    - restart smokeping
 
-- name: "smokeping: Controlling generate-smokeping for Fping random between 1-4"
+- name: "smokeping: directory for rrd"
+  file:
+    path: "{{ smokeping_datadir }}"
+    state: directory
+    owner: "{{ observium_user }}"
+    group: "{{ apache_group }}"
+    mode: 0774
+
+
+- name: "smokeping: Controlling generate-smokeping for compactebily"
   lineinfile:
    path: "{{ observium_path }}/scripts/generate-smokeping.php"
    regexp: 'echo\(\"probe = FPing\"'

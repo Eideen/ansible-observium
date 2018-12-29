@@ -9,7 +9,7 @@
     group: "{{ apache_group }}"
 
 - name: downloaded and extract community edition
-  when: not observium_use_subscription and not observium_type == "Subscription"
+#  when: not observium_stat.stat.exists
   unarchive:
    owner: "{{ observium_user }}"
    group: "{{ apache_group }}"

@@ -30,9 +30,8 @@
     path: "{{ observium_path }}"
   register: observsium_stat
 
-- name:
+- name: include setup tasks, based on Subscription
   include_tasks: "observium.setup-{{ observium_type }}.yml"
-  when: not observium_use_subscription and not observium_type == "Subscription"
 
 - name: create observium sub-directories
   file:
@@ -82,7 +81,7 @@
   include_tasks: main-rrdcached.yml
 
 - name: include smokeping task
-  include_tasks: main-rrdcached.yml
+  include_tasks: main-smokeping.yml
 
 
 - name: setup devices
