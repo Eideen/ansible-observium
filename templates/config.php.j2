@@ -43,8 +43,10 @@ $config['fping6'] = "{{ observium_fping }}6";
 $config['ping']['retries'] = {{ observium_ping_retries }};
 $config['ping']['timeout'] = {{ observium_ping_timeout }};
 
+{% if rrdcached_socket %}
 // RRDCached
 $config['rrdcached'] = "unix:{{ rrdcached_socket }}";
+{% endif %}
 
 // RANCID
 {% for path in observium_rancid_configs %}

@@ -91,7 +91,5 @@
     group: root
     mode: 0644
 
-- include_tasks: smokeping.yml
-
 - include_tasks: devices.yml
   when: observium_devices is defined

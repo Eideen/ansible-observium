@@ -81,10 +81,6 @@ observium_cron_jobs:
   - "13  */3 * * *  {{ observium_user }}  cd {{ observium_path }}; tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1"
 
 
-observium_cron_jobs_smokeping:
-  - "1  */6 * * *  root  {{ observium_path }}/scripts/generate-smokeping.php > /etc/smokeping/target2 && service smokeping restart"
-
-
 ### rrdcached ###
 rrdcached_demon: /usr/bin/rrdcached
 rrdcached_socket: /var/run/rrdcached.sock
@@ -96,32 +92,3 @@ rrdcached_Wjitter: 1800
 rrdcached_Wjthreads: 4
 rrdcached_delay: 1800
 rrdcached_ftimeout: 3600
-
-
-
-### smokeping related ###
-#plasse to store RRD file, when using RRDCached it can only be one parant folder.
-smokeping_datadir: "{{ rrdcached_basefolder }}/smokeping"
-#
-
-
-#https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html#___top
-
-#owner (mandatory setting) Name of the person responsible for this smokeping installation.
-smokeping_owner: "{{ USER }}"
-#contact (mandatory setting) Mail address of the person responsible for this smokeping installation.
-smokeping_owner_email: "{{ USER }}@{{ ansible_domain }}"
-
-#syslogfacility The syslog facility to use, eg. local0...local7. Note: syslog logging is only used if you specify this.
-smokeping_syslogfacility: local1
-#The syslog priority to use, eg. debug, notice or info. Default is info.
-smokeping_syslogpriority: info
-
-
-smokeping_ping_interval: 0.01 #time between any host, in seconds
-
-smokeping_ping_hostinterval: 1 #time between same host, in seconds
-
-#Email to Alert Group
-smokeping_email_to: "smokepingAlert@{{ ansible_domain }}"
-smokeping_email_from: "smokeping@{{ ansible_domain }}"
