@@ -10,40 +10,45 @@
 #   include_tasks: setup-debian.yml
 #   when: ansible_os_family == "Debian"
 
-- name: Make observium user
+#
+- name: Include prerequisites for Redhat Make observium user
   user:
-    name: {{ observium_user }}
-    shell: /usr/sbin/nologin
-    groups: {{ apache_group }}
+    name: "{{ observium_user }}"
+    shell: "/bin/false"
+    groups: "{{ apache_group }}"
     append: yes
-    home: {{ observium_path }}
+    home: "{{ observium_path }}"
     create_home: no
-    comment: user for running observium
+    comment: "user for running observium"
+  when: not observium_user == "root"
+
+#  when: "observium_user  =! 'root'"
 
 
 - name: check if observium path exists
   stat:
-    path: {{ observium_path }}
-  register: observium_stat
+    path: "{{ observium_path }}"
+  register: observsium_stat
 
 - name: create observium path
   file:
-    path: {{ observium_path }}
+    path: "{{ observium_path }}"
     state: directory
     mode: 0755
-    owner: {{ observium_user }}
-    group: {{ apache_group }}
+    owner: "{{ observium_user }}"
+    group: "{{ apache_group }}"
 
 - name: Checkout subscription observium
   when: observium_use_subscription
   subversion:
-    dest: /opt/observium
-    repo: {{ observium_svn_url }}/{{ observium_svn_branch }}
-    username: {{ observium_svn_username }}
-    password: {{ observium_svn_password }}
+    dest: "{{ observium_path }}"
+    repo: "{{ observium_svn_url }}/{{ observium_svn_branch }}"
+    username: "{{ observium_svn_username }}"
+    password: "{{ observium_svn_password }}"
 
 - name: check if observium community edition is downloaded
-  stat: path=/opt/observium-community-latest.tar.gz
+  stat:
+    path: "{{ observium_path }}-community-latest.tar.gz"
   register: observium_community_stat
 
 - name: extract community edition
@@ -51,7 +56,7 @@
   unarchive:
    src: "{{ observium_community_url }}"
    dest: /opt
-   creates: /opt/observium/config.php.default
+   creates: "{{ observium_path }}/config.php.default"
 
 - name: include selinux tasks
   include_tasks: selinux.yml
@@ -59,17 +64,17 @@
 
 - name: create observium directories
   file:
-    path: {{ item.path }}
+    path: "{{ item.path }}"
     state: directory
-    owner: {{ observium_user }}
-    group: {{ apache_group }}
-    mode: {{ item.mode }}
+    owner: "{{ observium_user }}"
+    group: "{{ apache_group }}"
+    mode: "{{ item.mode }}"
   with_items: "{{ observium_directories }}"
 
 - name: template observium configuration
   template:
     src: config.php.j2
-    dest: {{ observium_path }}/config.php
+    dest: "{{ observium_path }}/config.php"
     owner: root
     group: root
     backup: yes

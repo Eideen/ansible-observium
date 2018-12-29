@@ -20,15 +20,14 @@
     - localhost
 
 - name: create my.cnf for observium
-  template: >-
-    src=my.cnf.j2
-    dest={{ observium_path }}/.my.cnf
-    owner={{ observium_user }}
-    group={{ observium_user }}
-    backup=yes
+  template:
+    src: my.cnf.j2
+    dest: "{{ observium_path }}/.my.cnf"
+    owner: "{{ observium_user }}"
+    group: "{{ observium_user }}"
+    backup: yes
+  when: not ansible_os_family == "Debian"
 
 - name: insert mysql database schema
-  command: >-
-    chdir=/opt/observium
-    php /opt/observium/discovery.php -u
+  command: php {{ observium_path }}/discovery.php -u
   changed_when: False

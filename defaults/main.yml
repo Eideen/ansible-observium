@@ -70,7 +70,7 @@ observium_rancid_version: 2
 observium_geocoding_dns: yes
 #
 observium_directories:
-  - { path: "{{ observium_path }}/logs", mode: "0775" }
+  - { path: "{{ observium_path }}/logs", mode: "0755" }
   - { path: "{{ observium_path }}/rrd", mode: "0775" }
 observium_cron_jobs:
   - "33  */6 * * *  {{ observium_user }}  {{ observium_path }}/discovery.php -h all > /dev/null 2>&1"
@@ -86,30 +86,31 @@ observium_cron_jobs_smokeping:
 
 
 ### rrdcached ###
-observium_rrdcached_demon: /usr/bin/rrdcached
-observium_rrdcached_socket: /var/run/rrdcached.sock
-observium_rrdcached_journal: /var/lib/rrdcached/journal/
-observium_rrdcached_pidfile: /var/run/rrdcached.pid
-observium_rrdcached_wtimeout: 1800
-observium_rrdcached_Wjitter: 1800
-observium_rrdcached_Wjthreads: 4
-observium_rrdcached_delay: 1800
-observium_rrdcached_ftimeout: 3600
+rrdcached_demon: /usr/bin/rrdcached
+rrdcached_socket: /var/run/rrdcached.sock
+rrdcached_journal: /var/lib/rrdcached/journal/
+rrdcached_pidfile: /var/run/rrdcached.pid
+rrdcached_basefolder: "{{ observium_path }}/rrd"
+rrdcached_wtimeout: 1800
+rrdcached_Wjitter: 1800
+rrdcached_Wjthreads: 4
+rrdcached_delay: 1800
+rrdcached_ftimeout: 3600
 
 
 
 ### smokeping related ###
 #plasse to store RRD file, when using RRDCached it can only be one parant folder.
-smokeping_datadir: /opt/observium/rrd/smokeping
+smokeping_datadir: "{{ rrdcached_basefolder }}/smokeping"
 #
 
 
 #https://oss.oetiker.ch/smokeping/doc/smokeping_config.en.html#___top
 
 #owner (mandatory setting) Name of the person responsible for this smokeping installation.
-smokeping_owner: test
+smokeping_owner: "{{ USER }}"
 #contact (mandatory setting) Mail address of the person responsible for this smokeping installation.
-smokeping_owner_email: test@example.com
+smokeping_owner_email: "{{ USER }}@{{ ansible_domain }}"
 
 #syslogfacility The syslog facility to use, eg. local0...local7. Note: syslog logging is only used if you specify this.
 smokeping_syslogfacility: local1

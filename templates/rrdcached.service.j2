@@ -5,13 +5,13 @@ After=network.target
 [Service]
 Restart=always
 User=root
-ExecStartPre=/usr/bin/install -d -m 0775 {{ observium_rrdcached_journal }} 
+ExecStartPre=/usr/bin/install -d -m 0775 {{ rrdcached_journal }}
 ExecStart=/usr/bin/rrdcached -s {{ apache_group }} \
-    -l {{ observium_rrdcached_socket }} \
-    -p {{ observium_rrdcached_pidfile }} \
-    -j {{ observium_rrdcached_journal }} \
-    -b {{ observium_path }}/rrd/ -B \
-    -g -w {{ observium_rrdcached_wtimeout }} -z {{ observium_rrdcached_delay }} -f {{ observium_rrdcached_ftimeout }}
+    -l {{ rrdcached_socket }} \
+    -p {{ rrdcached_pidfile }} \
+    -j {{ rrdcached_journal }} \
+    -b {{ rrdcached_basefolder }}  -B \
+    -g -w {{ rrdcached_wtimeout }} -z {{ rrdcached_delay }} -f {{ rrdcached_ftimeout }}
 
 [Install]
 WantedBy=multi-user.target

@@ -10,6 +10,6 @@
   command: >-
     semanage fcontext -a -t {{ item.setype }} "{{ item.path }}"
   with_items:
-    - { path: "{{ observium_rrdcached_socket }}", setype: httpd_sys_rw_content_t }
+    - { path: "{{ rrdcached_socket }}", setype: httpd_sys_rw_content_t }
     - { path: "{{ observium_path }}/rrd(/.*)?",   setype: httpd_sys_rw_content_t }
     - { path: "{{ observium_path }}/logs(/.*)?",   setype: httpd_log_t }

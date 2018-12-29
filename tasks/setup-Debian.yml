@@ -3,4 +3,4 @@
   apt:
    name: "{{ observium_packages }}"
    state: present
-   update_cache: yes
+   

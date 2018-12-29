@@ -44,7 +44,7 @@ $config['ping']['retries'] = {{ observium_ping_retries }};
 $config['ping']['timeout'] = {{ observium_ping_timeout }};
 
 // RRDCached
-$config['rrdcached'] = "{{ observium_rrdcached_socket }}";
+$config['rrdcached'] = "unix:{{ rrdcached_socket }}";
 
 // RANCID
 {% for path in observium_rancid_configs %}

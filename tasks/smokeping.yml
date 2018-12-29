@@ -67,7 +67,7 @@
 
 - name: Controlling generate-smokeping for Fping random between 1-4
   lineinfile:
-   path: /opt/observium/scripts/generate-smokeping.php
+   path: "{{ observium_path }}/scripts/generate-smokeping.php"
    regexp: 'echo\(\"probe = FPing\"'
    insertbefore: 'echo\(\"host = \"'
    line: '  echo("probe = FPing" . rand(1,4) . PHP_EOL);'
