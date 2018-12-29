@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+# smokeping probes
+*** Probes ***
+
++ FPing
+
+binary = /usr/bin/fping
+
+# hostinterval
+# The fping "-p" parameter, but in (possibly fractional) seconds rather than milliseconds, for consistency with other Smokeping probes. From fping(1):
+#
+# This parameter sets the time that fping waits between successive packets to an individual target.
+#from FPing Default is 1s and minimum is 0.01s.
+hostinterval = {{ smokeping_ping_hostinterval }}
+
+#Need for large installations
+#20 pings * 100ms = 2000ms = 2s per host
+#((100/20 = 5 hosts per sec)) =  300 per min
+
+#((1000/20 = 50 hosts per sec)) = 3000 per min
+# Default value: 0.01
+#minimum value: 0.001 (1ms)
+mininterval = {{ smokeping_ping_interval }}
+
+
+#Split for higher throughput, must if change must be updated in task: smokeping.yml..'echo("probe = FPing" . rand(1,4) . PHP_EOL);'
+++FPing
+offset = 00%
+++FPing1
+offset = 00%
+++FPing1
+offset = 25%
+++FPing3
+offset = 50%
+++FPing4
+offset = 75%

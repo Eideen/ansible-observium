@@ -10,7 +10,7 @@ WRITE_TIMEOUT={{ rrdcached_wtimeout }}
 WRITE_JITTER={{ rrdcached_Wjitter }}
 
 # Optional override number of write_threads
-WRITE_THREADS=4
+WRITE_THREADS= {{ rrdcached_Wjthreads }}
 
 # Where database files are placed.  If left unset, the default /tmp will
 # be used.  NB: The daemon will reject a directory that has symlinks as

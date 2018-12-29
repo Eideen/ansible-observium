@@ -1,0 +1,19 @@
+---
+
+- name: create observium path
+  file:
+    path: "{{ observium_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ observium_user }}"
+    group: "{{ apache_group }}"
+
+- name: downloaded and extract community edition
+  when: not observium_use_subscription and not observium_type == "Subscription"
+  unarchive:
+   owner: "{{ observium_user }}"
+   group: "{{ apache_group }}"
+   src: "{{ observium_community_url }}"
+   dest: /opt
+   creates: "{{ observium_path }}/config.php.default"
+   remote_src: yes

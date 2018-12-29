@@ -1,0 +1,21 @@
+---
+- name: "RRDCached: Include prerequisites"
+  package:
+    name: rrdcached
+    state: present
+
+- name: "RRDCached: template rrdcached config"
+  template:
+    src: rrdcached.{{ ansible_os_family }}.j2
+    dest: /etc/default/rrdcached
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+   - restart rrdcached
+
+- name: "RRDCached: enable and start"
+  service:
+    name: rrdcached
+    enabled: yes
+    state: started

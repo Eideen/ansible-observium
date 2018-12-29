@@ -1,0 +1,27 @@
+---
+
+- name: create observium path
+  file:
+    path: "{{ observium_path }}"
+    state: directory
+    mode: 0755
+    owner: "{{ observium_user }}"
+    group: "{{ apache_group }}"
+
+- name: Checkout subscription observium
+  when: observium_use_subscription
+  subversion:
+    dest: "{{ observium_path }}"
+    repo: "{{ observium_svn_url }}/{{ observium_svn_branch }}"
+    username: "{{ observium_svn_username }}"
+    password: "{{ observium_svn_password }}"
+
+
+- name: create observium sub-directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items: "{{ observium_directories }}"

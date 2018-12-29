@@ -1,6 +1,5 @@
 ---
 - name: install prerequisites
-  apt:
+  package:
    name: "{{ observium_packages }}"
    state: present
-   
