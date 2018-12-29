@@ -11,7 +11,7 @@
 #   when: ansible_os_family == "Debian"
 
 #
-- name: Include prerequisites for Redhat Make observium user
+- name: Make observium user
   user:
     name: "{{ observium_user }}"
     shell: "/bin/false"

@@ -9,14 +9,14 @@ observium_fping: /usr/sbin/fping
 observium_email_sendmail_path: /usr/sbin/sendmail
 
 #General
-rpmforge_release: 0.5.3-1.el7
+#rpmforge_release: 0.5.3-1.el7 #unused
 observium_use_subscription: no
 observium_svn_branch: stable
 observium_svn_url: http://svn.observium.org/svn/observium/branches
 observium_svn_username: ""
 observium_svn_password: ""
 observium_community_url: http://www.observium.org/observium-community-latest.tar.gz
-observium_user: root
+observium_user: observium
 #
 observium_web_mouseover: "TRUE"
 #
@@ -65,8 +65,6 @@ observium_rancid_configs: []
 observium_rancid_version: 2
 #
 
-
-#
 observium_geocoding_dns: yes
 #
 observium_directories:
