@@ -3,3 +3,14 @@
   package:
    name: "{{ observium_packages }}"
    state: present
+
+- name: "snmp: use observium MIBs"
+  lineinfile:
+   path: "/etc/snmp/snmp.conf"
+   regexp: 'mibs :'
+   line: '"mibs : /opt/observium/mibs/rfc:/opt/observium/mibs/net-snmp"'
+
+# - name: install latest pyOpenSSL if needed
+#   pip:
+#    name: pyOpenSSL
+#    state: latest

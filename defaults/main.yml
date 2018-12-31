@@ -1,6 +1,25 @@
 ---
 ansible_managed: This file is managed by Ansible, all changes will be lost.
 #
+
+#adduser.php <username> <password> <level 1-10> [email]
+#
+# EXAMPLE:
+# ADMIN:   adduser.php <username> <password> 10 [email]
+#
+# USER LEVELS:
+#   0 - Disabled (This user disabled)
+#   1 - Normal User (This user has read access to individual entities)
+#   5 - Global Read (This user has global read access)
+#   7 - Global Secure Read (This user has global read access with secured info)
+#   8 - Global Secure Read / Limited Write (This user has secure global read access with scheduled maintenence read/write.)
+#   10 - Administrator (This user has full administrative access)
+
+observium_users: []
+# - {username: admin, password: admin, email: admin@example.com, level: 10}
+# - {username: user, password: user, email: user@example.com, level: 5}
+
+
 #pathnames/filesnames
 observium_backup_dest: ~/observium.backup.tar.xz
 observium_path: /opt/observium
@@ -11,14 +30,15 @@ observium_email_sendmail_path: /usr/sbin/sendmail
 #General
 mail_domain: example.com
 #rpmforge_release: 0.5.3-1.el7 #unused
+
 observium_type: Community # Community or  Subscription
 #observium_use_subscription: no
-observium_svn_branch: stable
+observium_svn_branch: stable # stable or current
 observium_svn_url: http://svn.observium.org/svn/observium/branches
 observium_svn_username: ""
 observium_svn_password: ""
 observium_community_url: http://www.observium.org/observium-community-latest.tar.gz
-observium_user: observium
+observium_user: observium #linux user for crontab and files
 #
 observium_web_mouseover: "TRUE"
 #
@@ -47,8 +67,14 @@ observium_email_default: foo
 observium_email_from: "nobody@{{ mail_domain }}"
 observium_email_backend: sendmail
 
+
 #
-observium_poller_threads: 2
+observium_poller_threads: # empty = auto
+observium_poller_max_running: "{{ansible_processor_vcpus * 2,25}}"
+observium_poller_max_la: "{{ansible_processor_vcpus * 2,25}}"
+observium_poller_alerter: TRUE #TRUE og FALSE #Execute alerter.php after poller.php
+observium_poller_stats:  TRUE #TRUE og FALSE #able poller wrapper statistics in RRD (can be seen at page http://your_observium/pollerlog/)
+
 #
 observium_snmp_version: "v2c"
 observium_snmp_timeout: 1
@@ -79,7 +105,7 @@ observium_cron_jobs:
   - { name: "Observium poller", min: "*/5", hour: "*", job: "{{ observium_path }}/poller-wrapper.py > /dev/null 2>&1"}
   - { name: "Observium clean up of sys-, event- and alert-log", min: 13, hour: 5, job: "{{ observium_path }}/housekeeping.php -ysel >> /dev/null 2>&1"}
   - { name: "Observium clean up of urrds, ports, orphaned entries in the database and performance data", min: 47, hour: 4, job: "{{ observium_path }}/housekeeping.php -yrptb >> /dev/null 2>&1"}
-  - { name: "backup of Observium logs, rrdfiles, and config to {{ observium_backup_dest }}", min: 13, hour: "*/3", job: "cd {{ observium_path }}; tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1; chmod 600 {{ observium_backup_dest }}"}
+  - { name: "backup of Observium logs, rrdfiles, and config to {{ observium_backup_dest }}", min: 13, hour: "*/3", job: "cd {{ observium_path }} && tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1 && chmod 600 {{ observium_backup_dest }}"}
 
 
 ### rrdcached ###
@@ -128,8 +154,41 @@ smokeping_templates:
   - { src: smokeping.Alerts.j2, dest: "{{ smokeping_config_dir }}/Alerts",  mode: "0644" }
   - { src: smokeping.Probes.j2, dest: "{{ smokeping_config_dir }}/Probes",  mode: "0644" }
   - { src: smokeping.General.j2, dest: "{{ smokeping_config_dir }}/General",  mode: "0644" }
-  - { src: smokeping.generate-smokeping.php.j2, dest: "{{ observium_path }}/scripts/generate-smokeping.php",  mode: "0774" }  
+  - { src: smokeping.generate-smokeping.php.j2, dest: "{{ observium_path }}/scripts/generate-smokeping.php",  mode: "0774" }
 
 smokeping_regxp:
   - { path: "{{ smokeping_config_dir }}/pathnames", regxp: "datadir  =",  line: "datadir  = {{ smokeping_datadir }}" }
   - { path: "/etc/smokeping/config", regxp: "^@include {{ smokeping_config_dir }}/Targets2",  line: "@include {{ smokeping_config_dir }}/Targets2" }
+
+### SSL certificate ###
+
+
+SSL_Country_Name: NO #(2 letter code) [AU]
+SSL_State_or_Province_Name: Province
+SSL_Locality_Name: Locality
+SSL_Organization_Name: My dirty business #(eg, company) [Internet Widgits Pty Ltd]
+SSL_Organizational_Unit_Name:  IT Department #(eg, section) []:
+SSL_Common_Name: "*.{{ansible_fqdn}}" #(e.g. server FQDN or YOUR name) []:
+#SSL_Email_Address: "{{ ansible_env.USER }}@{{ mail_domain }}"
+
+### apache ###
+
+apache_doc_root: "{{observium_path}}/html"
+apache_ssh_folder: /etc/apache2/ssl
+apache_ssh_crt_path: "{{apache_ssh_folder}}/ansible.com.crt"
+apache_ssh_key_path: "{{apache_ssh_folder}}/ansible.com.key"
+#apache_ssh_priv_path: "{{apache_ssh_folder}}/ansible.com.pem"
+#apache_ssh_csr_path: "{{apache_ssh_folder}}/ansible.com.csr"
+
+apache_vhost_config: #also used to enable sites
+  - { src: apache2.observium.j2, dest: "000-default.conf", mode: "0644" }
+  - { src: apache2.observium-ssl.j2, dest: "default-ssl.conf", mode: "0644" }
+
+apache_mods_enabled:
+  - rewrite
+  - ssl
+  - mpm_prefork
+  - php7.0
+
+apache_mods_disabled:
+  - mpm_event

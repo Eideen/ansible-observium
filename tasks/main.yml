@@ -77,13 +77,17 @@
 #     group: root
 #     mode: 0644
 
-- name: include rrdcached task
-  include_tasks: main-rrdcached.yml
 
-- name: include smokeping task
-  include_tasks: main-smokeping.yml
+-  include_tasks: setup.rrdcached.yml
+-  include_tasks: setup.smokeping.yml
+-  include_tasks: setup.apache.yml
 
 
 - name: setup devices
   include_tasks: observium.devices.yml
   when: observium_devices is defined
+
+- name: "setup observium users"
+  when: observium_users
+  command: "{{observium_path}}/adduser.php {{ item.username }} {{ item.password }} {{ item.level }} {{ item.email }}"
+  with_items: "{{observium_users}}"

@@ -15,7 +15,7 @@ WRITE_THREADS= {{ rrdcached_Wjthreads }}
 # Where database files are placed.  If left unset, the default /tmp will
 # be used.  NB: The daemon will reject a directory that has symlinks as
 # components.  NB: You may want to have -B in BASE_OPTS.
-BASE_PATH={{ rrdcached_basefolder }}
+BASE_PATH={{ rrdcached_basefolder }}/
 
 # Where journal files are placed.  If left unset, journaling will
 # be disabled.

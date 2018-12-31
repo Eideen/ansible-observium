@@ -4,8 +4,13 @@
   service:
    name: rrdcached
    state: restarted
-   
+
 - name: restart smokeping
   service:
    name: smokeping
    state: restarted
+
+- name: restart apache
+  service:
+    name: "{{ apache_service }}"
+    state: restarted

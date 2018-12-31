@@ -7,6 +7,12 @@
     name: smokeping
     state: present
 
+- name: "make the smokeping user part of {{ apache_group }}"
+  user:
+    name: smokeping
+    groups: "{{ apache_group }}"
+    append: yes
+    
 - name: "smokeping: templates config files, and generate-Targets2-script"
   template:
     src: "{{ item.src }}"

@@ -1,0 +1,83 @@
+---
+- name: "apache: templates config files"
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ apache_conf_path }}/sites-available/{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items: "{{ apache_vhost_config }}"
+  notify:
+  - restart apache
+
+- name: Add vhost symlink in sites-enabled.
+  file:
+    src: "{{ apache_conf_path }}/sites-available/{{ item.dest }}"
+    dest: "{{ apache_conf_path }}/sites-enabled/{{ item.dest }}"
+    state: link
+  with_items: "{{ apache_vhost_config }}"
+  notify: restart apache
+
+
+
+- name: create directory "{{apache_ssh_folder}}"
+  file:
+    path: "{{apache_ssh_folder}}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: "check if {{ apache_ssh_key_path }}"
+  stat:
+    path: "{{ apache_ssh_key_path }}"
+  register: apache_ssh_key_stat
+
+- name: "check if {{ apache_ssh_crt_path }}"
+  stat:
+    path: "{{ apache_ssh_crt_path }}"
+  register: apache_ssh_crt_stat
+
+
+
+
+- name: create self-signed SSL cert
+  command: openssl req -new -nodes -x509 -subj "/C={{SSL_Country_Name}}/ST={{SSL_State_or_Province_Name}}/L={{SSL_Locality_Name}}/O={{SSL_Organization_Name}}/OU={{SSL_Organizational_Unit_Name}}/CN={{SSL_Common_Name}}" -days 3650 -keyout {{ apache_ssh_key_path }} -out {{ apache_ssh_crt_path }} -extensions v3_ca creates={{ apache_ssh_crt_path }}
+  notify: restart apache
+  when: apache_ssh_key_stat.stat.exists == false or apache_ssh_crt_stat.stat.exists == false
+
+# - name: Generate a Self Signed OpenSSL certificate
+#   openssl_certificate:
+#     path: "{{ apache_ssh_crt_path }}"
+#     privatekey_path: "{{ apache_ssh_priv_path }}"
+#     csr_path: "{{ apache_ssh_csr_path }}"
+#     provider: selfsigned
+#   notify: restart apache2
+
+- name: "php: check mod mcrypt status"
+  shell: 'php -m | grep mcrypt'
+  register: php5enmod_mcrypt
+   #  msg: "{{php5enmod_mcrypt}}"
+  changed_when: "php5enmod_mcrypt.stdout != \"mcrypt\""
+
+
+
+- name: "php: enable mcrypt"
+  command: phpenmod mcrypt
+  when: "php5enmod_mcrypt.stdout != \"mcrypt\""
+
+
+- name: "apache: enable mods"
+  apache2_module:
+  #  name: "{{ item | regex_replace('(\\w+)\\.load','\\1') }}"
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ apache_mods_enabled }}"
+  notify: restart apache
+
+- name: "apache:Disable mods"
+  apache2_module:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ apache_mods_disabled }}"
+  notify: restart apache
