@@ -24,8 +24,7 @@ observium_users: []
 observium_backup_dest: ~/observium.backup.tar.xz
 observium_path: /opt/observium
 observium_collectd_dir: /var/lib/collectd/rrd
-observium_fping: /usr/sbin/fping
-observium_email_sendmail_path: /usr/sbin/sendmail
+sendmail_path: /usr/sbin/sendmail
 
 #General
 mail_domain: example.com
@@ -63,8 +62,8 @@ observium_auth_ldap_groups: []
 
 apache_group: apache
 #
-observium_email_default: foo
-observium_email_from: "nobody@{{ mail_domain }}"
+admin_email: "admin@{{ mail_domain }}"
+observium_email_from: "observium@{{ mail_domain }}"
 observium_email_backend: sendmail
 
 
@@ -105,7 +104,7 @@ observium_cron_jobs:
   - { name: "Observium poller", min: "*/5", hour: "*", job: "{{ observium_path }}/poller-wrapper.py > /dev/null 2>&1"}
   - { name: "Observium clean up of sys-, event- and alert-log", min: 13, hour: 5, job: "{{ observium_path }}/housekeeping.php -ysel >> /dev/null 2>&1"}
   - { name: "Observium clean up of urrds, ports, orphaned entries in the database and performance data", min: 47, hour: 4, job: "{{ observium_path }}/housekeeping.php -yrptb >> /dev/null 2>&1"}
-  - { name: "backup of Observium logs, rrdfiles, and config to {{ observium_backup_dest }}", min: 13, hour: "*/3", job: "cd {{ observium_path }} && tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1 && chmod 600 {{ observium_backup_dest }}"}
+  - { name: "backup of Observium logs, rrdfiles, and config to {{ observium_backup_dest }}", min: 13, hour: "*/3", job: "cd {{ observium_path }} sendmail_path&& tar -I \"pxz -1\" -cf {{ observium_backup_dest }} logs/ rrd/ config.php > /dev/null 2&>1 && chmod 600 {{ observium_backup_dest }}"}
 
 
 ### rrdcached ###
@@ -114,6 +113,7 @@ rrdcached_socket: /var/run/rrdcached.sock
 rrdcached_journal: /var/lib/rrdcached/journal/
 rrdcached_pidfile: /var/run/rrdcached.pid
 rrdcached_basefolder: "{{ observium_path }}/rrd"
+rrdcached_user: root
 rrdcached_wtimeout: 1800
 rrdcached_Wjitter: 1800
 rrdcached_Wjthreads: 4
@@ -131,7 +131,7 @@ smokeping_datadir: "{{ rrdcached_basefolder }}/smokeping"
 #owner (mandatory setting) Name of the person responsible for this smokeping installation.
 smokeping_owner: "{{ ansible_env.USER }}"
 #contact (mandatory setting) Mail address of the person responsible for this smokeping installation.
-smokeping_owner_email: "{{ ansible_env.USER }}@{{ mail_domain }}"
+smokeping_owner_email: "{{ admin_email }}"
 
 #syslogfacility The syslog facility to use, eg. local0...local7. Note: syslog logging is only used if you specify this.
 smokeping_syslogfacility: local1
@@ -143,7 +143,7 @@ smokeping_ping_interval: 0.01 #time between any host, in seconds
 smokeping_ping_hostinterval: 1 #time between same host, in seconds
 
 #Email to Alert Group
-smokeping_email_to: "smokepingAlert@{{ mail_domain }}"
+smokeping_email_to: "{{admin_email}}"
 smokeping_email_from: "smokeping@{{ mail_domain }}"
 
 observium_cron_jobs_smokeping:
@@ -179,6 +179,8 @@ apache_ssh_crt_path: "{{apache_ssh_folder}}/ansible.com.crt"
 apache_ssh_key_path: "{{apache_ssh_folder}}/ansible.com.key"
 #apache_ssh_priv_path: "{{apache_ssh_folder}}/ansible.com.pem"
 #apache_ssh_csr_path: "{{apache_ssh_folder}}/ansible.com.csr"
+
+apache_http_redirect: "{{ ansible_default_ipv4.address }}"
 
 apache_vhost_config: #also used to enable sites
   - { src: apache2.observium.j2, dest: "000-default.conf", mode: "0644" }

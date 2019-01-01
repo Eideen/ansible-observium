@@ -4,6 +4,17 @@
     name: rrdcached
     state: present
 
+- name: "RRDCached: change owner of journal files"
+  file:
+    path: /var/lib/rrdcached
+    state: directory
+    recurse: yes
+    owner: "{{ rrdcached_user }}"
+    group: "{{ rrdcached_user }}"
+  notify:
+   - restart rrdcached
+
+
 - name: "RRDCached: template rrdcached config"
   template:
     src: rrdcached.{{ ansible_os_family }}.j2

@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 <VirtualHost *:80>
-  Redirect / https://{{ ansible_default_ipv4.address }}/
-#    ServerAdmin {{smokeping_owner_email}}
+  Redirect / https://{{ apache_http_redirect }}/
+#    ServerAdmin {{admin_email}}
     DocumentRoot {{apache_doc_root}}
     <FilesMatch \.php$>
       SetHandler application/x-httpd-php

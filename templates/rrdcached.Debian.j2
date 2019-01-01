@@ -10,7 +10,7 @@ WRITE_TIMEOUT={{ rrdcached_wtimeout }}
 WRITE_JITTER={{ rrdcached_Wjitter }}
 
 # Optional override number of write_threads
-WRITE_THREADS= {{ rrdcached_Wjthreads }}
+WRITE_THREADS={{ rrdcached_Wjthreads }}
 
 # Where database files are placed.  If left unset, the default /tmp will
 # be used.  NB: The daemon will reject a directory that has symlinks as
@@ -26,7 +26,7 @@ JOURNAL_PATH={{ rrdcached_journal }}
 SOCKGROUP={{ apache_group }}
 
 # Optional override access mode of local control socket.
-#SOCKMODE=0660
+SOCKMODE=0660
 
 # FHS standard placement for process ID file.
 PIDFILE={{ rrdcached_pidfile }}
@@ -36,11 +36,11 @@ SOCKFILE={{ rrdcached_socket }}
 
 # Optional unprivileged group to run under when daemon.  If unset
 # retains invocation group privileges.
-#DAEMON_GROUP=smokeping
+DAEMON_GROUP={{ rrdcached_user }}
 
 # Optional unprivileged user to run under when daemon.  If unset
 # retains invocation user privileges.
-#DAEMON_USER=smokeping
+DAEMON_USER={{ rrdcached_user }}
 
 # Network socket address requests.  Use in conjunction with SOCKFILE to
 # also listen on INET domain sockets.  The option is a lower-case ell

@@ -41,8 +41,8 @@ $config['snmp']['max-rep'] = {{ observium_snmp_max_rep }};
 $config['snmp']['community'] = array("{{ '", "'.join(observium_snmp_communities) }}");
 
 // FPing
-$config['fping'] = "{{ observium_fping }}";
-$config['fping6'] = "{{ observium_fping }}6";
+$config['fping'] = "{{ fping_path }}";
+$config['fping6'] = "{{ fping_path }}6";
 $config['ping']['retries'] = {{ observium_ping_retries }};
 $config['ping']['timeout'] = {{ observium_ping_timeout }};
 
@@ -78,10 +78,10 @@ $config['geocoding']['dns'] = {{ 'TRUE' if observium_geocoding_dns else 'FALSE' 
 #$config['poller-wrapper']['alerter'] = TRUE;
 
 // Set up a default alerter (email to a single address)
-$config['email']['default']       = "{{ observium_email_default }}";
+$config['email']['default']       = "{{ admin_email }}";
 $config['email']['from']          = "{{ observium_email_from }}";
 $config['email']['default_only']  = TRUE;
 $config['email']['backend']       = "{{ observium_email_backend }}";
-$config['email']['sendmail_path'] = "{{ observium_email_sendmail_path }}";
+$config['email']['sendmail_path'] = "{{ sendmail_path }}";
 
 // End config.php

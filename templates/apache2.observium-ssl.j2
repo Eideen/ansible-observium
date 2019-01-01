@@ -2,7 +2,7 @@
 
 <IfModule mod_ssl.c>
 	<VirtualHost _default_:443>
-	ServerAdmin "{{smokeping_owner_email}}"
+	ServerAdmin "{{admin_email}}"
 	DocumentRoot {{apache_doc_root}}
 	<FilesMatch \.php$>
 		SetHandler application/x-httpd-php
