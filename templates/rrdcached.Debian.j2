@@ -51,6 +51,9 @@ DAEMON_USER={{ rrdcached_user }}
 # interfaces", but generally does not pass through init script functions
 # so use -L with no parameters for that configuration.
 #NETWORK_OPTIONS="-L"
+{% if rrdcached_network_enable == true %}
+NETWORK_OPTIONS="-L"
+{% endif %}
 
 #
 # Any other options not specifically supported by the script (-P, -f,

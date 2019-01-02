@@ -32,6 +32,12 @@ $config['auth_ldap_groups']['{{ group.name }}']['level'] = {{ group.level }};
 
 // WEB
 $config['web_mouseover'] = {{ observium_web_mouseover }};
+{% if observium_base_url %}
+$config['web_url']         = "{{observium_base_url}}"
+{% endif %}
+{% if observium_login_message %}
+$config['login_message']    = "{{observium_login_message}}";
+{% endif %}
 
 // SNMP
 $config['snmp']['retries'] = {{ observium_snmp_retries }};

@@ -15,13 +15,3 @@
     repo: "{{ observium_svn_url }}/{{ observium_svn_branch }}"
     username: "{{ observium_svn_username }}"
     password: "{{ observium_svn_password }}"
-
-
-- name: create observium sub-directories
-  file:
-    path: "{{ item.path }}"
-    state: directory
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    mode: "{{ item.mode }}"
-  with_items: "{{ observium_directories }}"
